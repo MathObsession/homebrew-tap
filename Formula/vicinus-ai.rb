@@ -79,7 +79,7 @@ class VicinusAi < Formula
     end
     (share/"vicinus-ai").install "frontend/dist"
 
-    virtualenv_install_with_resources(python: "python3.12")
+    virtualenv_install_with_resources(using: "python@3.12")
   end
 
   def caveats
