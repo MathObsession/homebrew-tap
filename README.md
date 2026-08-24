@@ -4,17 +4,19 @@ Custom Homebrew formulas for the VicinusAI stack.
 
 ## Install
 
+One line:
+
 ```bash
-brew tap MathObsession/tap https://github.com/MathObsession/homebrew-tap
-brew install mathobsession/tap/vicinus-ai
+curl -fsSL https://raw.githubusercontent.com/MathObsession/VicinusAI/main/install.sh | bash
 ```
 
-> Building `turbo-fieldfare` requires SwiftPM's manifest compiler to run
-> outside Homebrew's seatbelt sandbox (Command Line Tools toolchains):
->
-> ```bash
-> HOMEBREW_NO_SANDBOX=1 brew install mathobsession/tap/turbo-fieldfare
-> ```
+Or manually:
+
+```bash
+brew tap MathObsession/tap https://github.com/MathObsession/homebrew-tap
+brew trust mathobsession/tap          # one-time Homebrew 6 requirement
+brew install mathobsession/tap/vicinus-ai
+```
 
 This pulls in `turbo-fieldfare` (Swift + Metal Gemma 4 runtime) automatically.
 Launch the whole stack with:
