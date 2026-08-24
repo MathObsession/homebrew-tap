@@ -22,6 +22,11 @@ class VicinusAi < Formula
     sha256 "b4ce2265a7abece45e7cc896e98dbebe6cead56bcf805a3d23136d145f5445bf"
   end
 
+  resource "turbo-fieldfare-src" do
+    url "https://github.com/drumih/turbo-fieldfare/archive/refs/tags/0.5.0.tar.gz"
+    sha256 "6ab539e7b836c95a4f1054b6f5746e1c5eae2e6c1aaefd9b25abb2b2fae006cc"
+  end
+
   resource "certifi" do
     url "https://files.pythonhosted.org/packages/a3/c2/24167ea9858356b47a87a50d39908bfdb72ceeefe0041586e704e5376b3a/certifi-2026.7.22.tar.gz"
     sha256 "741e2c3b351ddf169a738da9f2c048608ff7f2c5cc02f1ebc6b118bb090d5d55"
@@ -79,19 +84,22 @@ class VicinusAi < Formula
 
   def install
     # Build the vendored TurboFieldfare inference runtime (Swift + Metal).
-    system "swift", "build", "--disable-sandbox", "-c", "release",
-           "--product", "TurboFieldfareServer"
-    system "swift", "build", "--disable-sandbox", "-c", "release",
-           "--product", "TurboFieldfareRepack"
+    resource("turbo-fieldfare-src").stage do
+      system "swift", "build", "--disable-sandbox", "-c", "release",
+             "--product", "TurboFieldfareServer"
+      system "swift", "build", "--disable-sandbox", "-c", "release",
+             "--product", "TurboFieldfareRepack"
 
-    turbo = libexec/"turbo"
-    turbo.install ".build/release/TurboFieldfareServer"
-    turbo.install ".build/release/TurboFieldfareRepack"
-    # SwiftPM resource bundles must sit beside the executables; Homebrew does
-    # not link directories out of bin/, hence libexec + wrapper scripts.
-    turbo.install Dir[".build/release/*.bundle"]
-    (bin/"TurboFieldfareServer").write_env_script(turbo/"TurboFieldfareServer", {})
-    (bin/"TurboFieldfareRepack").write_env_script(turbo/"TurboFieldfareRepack", {})
+      turbo = libexec/"turbo"
+      turbo.install ".build/release/TurboFieldfareServer"
+      turbo.install ".build/release/TurboFieldfareRepack"
+      # SwiftPM resource bundles must sit beside the executables; Homebrew
+      # does not link directories out of bin/, hence libexec + wrappers.
+      turbo.install Dir[".build/release/*.bundle"]
+    end
+    turbo_bin = libexec/"turbo"
+    (bin/"TurboFieldfareServer").write_env_script(turbo_bin/"TurboFieldfareServer", {})
+    (bin/"TurboFieldfareRepack").write_env_script(turbo_bin/"TurboFieldfareRepack", {})
 
     # Build the React frontend and ship it as static assets.
     cd "frontend" do
@@ -100,7 +108,8 @@ class VicinusAi < Formula
     end
     (share/"vicinus-ai").install "frontend/dist"
 
-    virtualenv_install_with_resources(using: "python@3.12")
+    virtualenv_install_with_resources(using: "python@3.12",
+                                      without: "turbo-fieldfare-src")
   end
 
   def caveats
