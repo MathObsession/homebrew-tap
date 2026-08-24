@@ -4,7 +4,7 @@ class VicinusAi < Formula
   desc "Local AI console: Gemma 4 inference via TurboFieldfare + web UI"
   homepage "https://github.com/MathObsession/VicinusAI"
   url "https://github.com/MathObsession/VicinusAI/archive/refs/tags/v0.1.4.tar.gz"
-  sha256 "4c99451ac2164f13341eafdf6d8cbe2fd70f83baae01d63b496be037fa59b7b0"
+  sha256 "394cb0139ae94ec343e5feaf9a6b6f5111bb7354daac81218e739299dca73658"
   license "Apache-2.0"
 
   depends_on "node" => :build
@@ -109,7 +109,7 @@ class VicinusAi < Formula
     (share/"vicinus-ai").install "frontend/dist"
 
     # Native GUI launcher (AppKit + WebKit) wrapping the CLI orchestrator.
-    system "swift", "build", "--disable-sandbox", "-c", "release"
+    # scripts/build-app.sh runs the (sandbox-disabled) SwiftPM build itself.
     system "bash", "scripts/build-app.sh"
     (libexec/"apps").install "build/VicinusAI.app"
     gui_wrapper = <<~EOS
