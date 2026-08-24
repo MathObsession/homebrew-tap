@@ -11,8 +11,8 @@ class TurboFieldfare < Formula
   # Uses Apple's Swift toolchain (Xcode or Command Line Tools).
 
   def install
-    system "swift", "build", "-c", "release", "--product", "TurboFieldfareServer"
-    system "swift", "build", "-c", "release", "--product", "TurboFieldfareRepack"
+    system "swift", "build", "--disable-sandbox", "-c", "release", "--product", "TurboFieldfareServer"
+    system "swift", "build", "--disable-sandbox", "-c", "release", "--product", "TurboFieldfareRepack"
 
     bin.install ".build/release/TurboFieldfareServer"
     bin.install ".build/release/TurboFieldfareRepack"
