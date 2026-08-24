@@ -15,7 +15,13 @@ Or manually:
 ```bash
 brew tap MathObsession/tap https://github.com/MathObsession/homebrew-tap
 brew trust mathobsession/tap          # one-time Homebrew 6 requirement
-brew install mathobsession/tap/vicinus-ai
+brew install vicinus-ai               # short form works once tapped
+```
+
+Updating later is just:
+
+```bash
+brew install vicinus-ai
 ```
 
 This pulls in `turbo-fieldfare` (Swift + Metal Gemma 4 runtime) automatically.
