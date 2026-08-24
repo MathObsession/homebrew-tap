@@ -11,13 +11,20 @@ class TurboFieldfare < Formula
   # Uses Apple's Swift toolchain (Xcode or Command Line Tools).
 
   def install
-    system "swift", "build", "--disable-sandbox", "-c", "release", "--product", "TurboFieldfareServer"
-    system "swift", "build", "--disable-sandbox", "-c", "release", "--product", "TurboFieldfareRepack"
+    system "swift", "build", "--disable-sandbox", "-c", "release",
+           "--product", "TurboFieldfareServer"
+    system "swift", "build", "--disable-sandbox", "-c", "release",
+           "--product", "TurboFieldfareRepack"
 
-    bin.install ".build/release/TurboFieldfareServer"
-    bin.install ".build/release/TurboFieldfareRepack"
-    # SwiftPM resource bundles must sit next to the executables.
-    bin.install Dir[".build/release/*.bundle"]
+    # Executables live in libexec with their SwiftPM resource bundles beside
+    # them: Homebrew does not link directories out of bin/, which would break
+    # Bundle.module lookups at runtime.
+    libexec.install ".build/release/TurboFieldfareServer"
+    libexec.install ".build/release/TurboFieldfareRepack"
+    libexec.install Dir[".build/release/*.bundle"]
+
+    (bin/"TurboFieldfareServer").write_env_script(libexec/"TurboFieldfareServer", {})
+    (bin/"TurboFieldfareRepack").write_env_script(libexec/"TurboFieldfareRepack", {})
   end
 
   test do
