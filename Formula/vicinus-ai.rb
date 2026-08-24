@@ -9,7 +9,13 @@ class VicinusAi < Formula
 
   depends_on "node" => :build
   depends_on "python@3.12"
-  depends_on "mathobsession/tap/turbo-fieldfare"
+  # The TurboFieldfare Swift runtime is built inside this formula (not as a
+  # separate tap dependency) so a single fully qualified install auto-taps,
+  # auto-trusts and completes on a fresh machine with one command.
+  # Requires Apple's Swift toolchain (Xcode or Command Line Tools), macOS 26
+  # and arm64 — same requirements as upstream turbo-fieldfare 0.5.0.
+  depends_on :macos
+  depends_on arch: :arm64
 
   resource "blinker" do
     url "https://files.pythonhosted.org/packages/21/28/9b3f50ce0e048515135495f198351908d99540d69bfdc8c1d15b73dc55ce/blinker-1.9.0.tar.gz"
@@ -72,6 +78,21 @@ class VicinusAi < Formula
   end
 
   def install
+    # Build the vendored TurboFieldfare inference runtime (Swift + Metal).
+    system "swift", "build", "--disable-sandbox", "-c", "release",
+           "--product", "TurboFieldfareServer"
+    system "swift", "build", "--disable-sandbox", "-c", "release",
+           "--product", "TurboFieldfareRepack"
+
+    turbo = libexec/"turbo"
+    turbo.install ".build/release/TurboFieldfareServer"
+    turbo.install ".build/release/TurboFieldfareRepack"
+    # SwiftPM resource bundles must sit beside the executables; Homebrew does
+    # not link directories out of bin/, hence libexec + wrapper scripts.
+    turbo.install Dir[".build/release/*.bundle"]
+    (bin/"TurboFieldfareServer").write_env_script(turbo/"TurboFieldfareServer", {})
+    (bin/"TurboFieldfareRepack").write_env_script(turbo/"TurboFieldfareRepack", {})
+
     # Build the React frontend and ship it as static assets.
     cd "frontend" do
       system "npm", "ci"
