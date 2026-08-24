@@ -7,7 +7,7 @@ class TurboFieldfare < Formula
 
   # arm64-only, macOS 26 / Metal 4 / Swift 6.2+ required upstream.
   depends_on :macos
-  depends_on :arm64
+  depends_on arch: :arm64
   # Uses Apple's Swift toolchain (Xcode or Command Line Tools).
 
   def install
