@@ -3,8 +3,8 @@ class VicinusAi < Formula
 
   desc "Local AI console: Gemma 4 inference via TurboFieldfare + web UI"
   homepage "https://github.com/MathObsession/VicinusAI"
-  url "https://github.com/MathObsession/VicinusAI/archive/refs/tags/v0.1.3.tar.gz"
-  sha256 "63478de96432a467cbc73556567d62a137635bf8611f9cdcbda38a4828cb064d"
+  url "https://github.com/MathObsession/VicinusAI/archive/refs/tags/v0.1.4.tar.gz"
+  sha256 "4c99451ac2164f13341eafdf6d8cbe2fd70f83baae01d63b496be037fa59b7b0"
   license "Apache-2.0"
 
   depends_on "node" => :build
@@ -108,6 +108,16 @@ class VicinusAi < Formula
     end
     (share/"vicinus-ai").install "frontend/dist"
 
+    # Native GUI launcher (AppKit + WebKit) wrapping the CLI orchestrator.
+    system "swift", "build", "--disable-sandbox", "-c", "release"
+    system "bash", "scripts/build-app.sh"
+    (libexec/"apps").install "build/VicinusAI.app"
+    gui_wrapper = <<~EOS
+      #!/bin/bash
+      exec /usr/bin/open "#{libexec}/apps/VicinusAI.app" "$@"
+    EOS
+    (bin/"vicinus-ai-gui").write(gui_wrapper)
+
     virtualenv_install_with_resources(using: "python@3.12",
                                       without: "turbo-fieldfare-src")
   end
@@ -117,6 +127,10 @@ class VicinusAi < Formula
       Launch everything with:
 
         vicinus-ai
+
+      Or use the native windowed launcher (Start button + built-in WebKit view):
+
+        vicinus-ai-gui
 
       On first run it downloads the Gemma 4 model (~15 GB, once) to:
         ~/Library/Application Support/VicinusAI/gemma4.gturbo
