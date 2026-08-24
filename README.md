@@ -4,18 +4,16 @@ Custom Homebrew formulas for the VicinusAI stack.
 
 ## Install
 
-One line:
+One command — the tap is added and trusted automatically:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/MathObsession/VicinusAI/main/install.sh | bash
+brew install mathobsession/tap/vicinus-ai
 ```
 
-Or manually:
+Afterwards, installing or updating by short name also works:
 
 ```bash
-brew tap MathObsession/tap https://github.com/MathObsession/homebrew-tap
-brew trust mathobsession/tap          # one-time Homebrew 6 requirement
-brew install vicinus-ai               # short form works once tapped
+brew install vicinus-ai
 ```
 
 Updating later is just:
