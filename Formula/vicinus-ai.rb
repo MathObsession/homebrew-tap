@@ -158,10 +158,6 @@ class VicinusAi < Formula
     EOS
   end
 
-  post_uninstall do
-    system "rm", "-rf", "/Applications/VicinusAI.app"
-  end
-
   test do
     assert_match "vicinus-ai-cli #{version}", shell_output("#{bin}/vicinus-ai-cli --version")
     assert_match "usage: vicinus-ai-cli", shell_output("#{bin}/vicinus-ai-cli --help")
