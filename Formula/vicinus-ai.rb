@@ -3,8 +3,8 @@ class VicinusAi < Formula
 
   desc "Local AI console: Gemma 4 inference via TurboFieldfare + web UI"
   homepage "https://github.com/MathObsession/VicinusAI"
-  url "https://github.com/MathObsession/VicinusAI/archive/refs/tags/v0.1.7.tar.gz"
-  sha256 "c48cbab3e9b10460f078f4bc3ad5b28585164519311fa8c4b1106382025c42f7"
+  url "https://github.com/MathObsession/VicinusAI/archive/refs/tags/v0.1.8.tar.gz"
+  sha256 "a3c5696122ed5a8004d4b925e8e00023ef78a4d514362fafb384d5f09bfb338b"
   license "Apache-2.0"
 
   depends_on "node" => :build
@@ -112,6 +112,13 @@ class VicinusAi < Formula
     # scripts/build-app.sh runs the (sandbox-disabled) SwiftPM build itself.
     system "bash", "scripts/build-app.sh"
     (libexec/"apps").install "build/VicinusAI.app"
+
+    virtualenv_install_with_resources(using: "python@3.12",
+                                      without: "turbo-fieldfare-src")
+
+    # vicinus-ai-cli is created automatically from pyproject.toml entry_points.
+    # vicinus-ai is the GUI launcher — copies the app to /Applications on first
+    # run and opens it from there on subsequent runs.
     gui_wrapper = <<~EOS
       #!/bin/bash
       HOMEBREW_PREFIX="${HOMEBREW_PREFIX:-/opt/homebrew}"
@@ -124,21 +131,18 @@ class VicinusAi < Formula
       fi
       exec /usr/bin/open "$APP_DST" "$@"
     EOS
-    (bin/"vicinus-ai-gui").write(gui_wrapper)
-
-    virtualenv_install_with_resources(using: "python@3.12",
-                                      without: "turbo-fieldfare-src")
+    (bin/"vicinus-ai").write(gui_wrapper)
   end
 
   def caveats
     <<~EOS
-      Launch everything with:
+      Launch the GUI (recommended):
 
-        vicinus-ai
+        vicinus-ai            # installs to /Applications, opens it
 
-      Or use the native windowed launcher (Start button + built-in WebKit view):
+      Or use the CLI directly:
 
-        vicinus-ai-gui
+        vicinus-ai-cli
 
       On first run it downloads the Gemma 4 model (~15 GB, once) to:
         ~/Library/Application Support/VicinusAI/gemma4.gturbo
@@ -146,13 +150,8 @@ class VicinusAi < Formula
       To reuse an existing .gturbo installation instead:
         export VICINUS_MODEL_DIR=/path/to/gemma4.gturbo
 
-      The GUI installs itself to /Applications on first launch:
-
-        vicinus-ai-gui        # copies VicinusAI.app to /Applications, opens it
-        # or double-click /Applications/VicinusAI.app directly
-
       Run without the Swift inference server (simulated UI):
-        vicinus-ai --no-turbo
+        vicinus-ai-cli --no-turbo
 
       To fully uninstall, remove the app and formula:
 
@@ -162,7 +161,7 @@ class VicinusAi < Formula
   end
 
   test do
-    assert_match "vicinus-ai #{version}", shell_output("#{bin}/vicinus-ai --version")
-    assert_match "usage: vicinus-ai", shell_output("#{bin}/vicinus-ai --help")
+    assert_match "vicinus-ai-cli #{version}", shell_output("#{bin}/vicinus-ai-cli --version")
+    assert_match "usage: vicinus-ai-cli", shell_output("#{bin}/vicinus-ai-cli --help")
   end
 end
