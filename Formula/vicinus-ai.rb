@@ -3,8 +3,8 @@ class VicinusAi < Formula
 
   desc "Local AI console: Gemma 4 inference via TurboFieldfare + web UI"
   homepage "https://github.com/MathObsession/VicinusAI"
-  url "https://github.com/MathObsession/VicinusAI/archive/refs/tags/v0.1.4.tar.gz"
-  sha256 "394cb0139ae94ec343e5feaf9a6b6f5111bb7354daac81218e739299dca73658"
+  url "https://github.com/MathObsession/VicinusAI/archive/refs/tags/v0.1.5.tar.gz"
+  sha256 "85079213a77bbda21dedffc6df411bba93af2b020842e63cb622226beb557243"
   license "Apache-2.0"
 
   depends_on "node" => :build
