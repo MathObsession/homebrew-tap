@@ -153,11 +153,13 @@ class VicinusAi < Formula
       Run without the Swift inference server (simulated UI):
         vicinus-ai-cli --no-turbo
 
-      To fully uninstall, remove the app and formula:
-
-        rm -rf /Applications/VicinusAI.app
+      To fully uninstall:
         brew uninstall vicinus-ai
     EOS
+  end
+
+  def post_uninstall
+    system "rm", "-rf", "/Applications/VicinusAI.app"
   end
 
   test do
