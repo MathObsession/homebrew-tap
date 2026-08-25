@@ -10,12 +10,6 @@ One command — the tap is added and trusted automatically:
 brew install mathobsession/tap/vicinus-ai
 ```
 
-Afterwards, installing or updating by short name also works:
-
-```bash
-brew install vicinus-ai
-```
-
 Updating later is just:
 
 ```bash
