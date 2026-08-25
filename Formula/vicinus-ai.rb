@@ -3,8 +3,8 @@ class VicinusAi < Formula
 
   desc "Local AI console: Gemma 4 inference via TurboFieldfare + web UI"
   homepage "https://github.com/MathObsession/VicinusAI"
-  url "https://github.com/MathObsession/VicinusAI/archive/refs/tags/v0.1.6.tar.gz"
-  sha256 "b5ca38ac02186303651e196e9d39e0a5c84adf7da186c6f438a4d9058c918f5f"
+  url "https://github.com/MathObsession/VicinusAI/archive/refs/tags/v0.1.7.tar.gz"
+  sha256 "c48cbab3e9b10460f078f4bc3ad5b28585164519311fa8c4b1106382025c42f7"
   license "Apache-2.0"
 
   depends_on "node" => :build
@@ -114,7 +114,15 @@ class VicinusAi < Formula
     (libexec/"apps").install "build/VicinusAI.app"
     gui_wrapper = <<~EOS
       #!/bin/bash
-      exec /usr/bin/open "#{libexec}/apps/VicinusAI.app" "$@"
+      HOMEBREW_PREFIX="${HOMEBREW_PREFIX:-/opt/homebrew}"
+      APP_SRC="$HOMEBREW_PREFIX/opt/vicinus-ai/libexec/apps/VicinusAI.app"
+      APP_DST="/Applications/VicinusAI.app"
+      xattr -d com.apple.quarantine "$APP_SRC" 2>/dev/null || true
+      if [ ! -d "$APP_DST" ] || [ "$APP_SRC/Contents/MacOS/VicinusAI" -nt "$APP_DST/Contents/MacOS/VicinusAI" ]; then
+          rm -rf "$APP_DST"
+          cp -R "$APP_SRC" "$APP_DST"
+      fi
+      exec /usr/bin/open "$APP_DST" "$@"
     EOS
     (bin/"vicinus-ai-gui").write(gui_wrapper)
 
@@ -138,8 +146,18 @@ class VicinusAi < Formula
       To reuse an existing .gturbo installation instead:
         export VICINUS_MODEL_DIR=/path/to/gemma4.gturbo
 
+      The GUI installs itself to /Applications on first launch:
+
+        vicinus-ai-gui        # copies VicinusAI.app to /Applications, opens it
+        # or double-click /Applications/VicinusAI.app directly
+
       Run without the Swift inference server (simulated UI):
         vicinus-ai --no-turbo
+
+      To fully uninstall, remove the app and formula:
+
+        rm -rf /Applications/VicinusAI.app
+        brew uninstall vicinus-ai
     EOS
   end
 
