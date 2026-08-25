@@ -158,7 +158,7 @@ class VicinusAi < Formula
     EOS
   end
 
-  def post_uninstall
+  post_uninstall do
     system "rm", "-rf", "/Applications/VicinusAI.app"
   end
 
