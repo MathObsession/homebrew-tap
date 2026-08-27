@@ -108,6 +108,10 @@ class VicinusAi < Formula
     end
     (share/"vicinus-ai").install "frontend/dist"
 
+    # Fetch the custom app icon from the repo (not in the v0.1.11 tag yet).
+    icon_url = "https://raw.githubusercontent.com/MathObsession/VicinusAI/main/vicinus.png"
+    system "curl", "-fL", "-o", "vicinus.png", icon_url
+
     # Native GUI launcher (AppKit + WebKit) wrapping the CLI orchestrator.
     # scripts/build-app.sh runs the (sandbox-disabled) SwiftPM build itself.
     system "bash", "scripts/build-app.sh"
